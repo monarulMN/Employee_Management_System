@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Employee_Management_System.Models.Entities.Employee>
 
 <h1>Employees</h1>
-<a class="btn btn mb-2" asp-action="Create">Add New Employee</a>
+<a class="btn btn-primary mb-2" asp-action="Create">Add Employee</a>
 
 <table class="table table-bordered">
     <thead>
@@ -24,6 +24,10 @@
                 <td>@employee.Email</td>
                 <td>@employee.PhoneNumber</td>
                 <td>@employee.Department?.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@employee.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
             </tr>
         }
     </tbody>

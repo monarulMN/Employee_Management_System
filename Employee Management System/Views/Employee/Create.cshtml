@@ -1,12 +1,13 @@
-﻿@model Employee_Management_System.Models.Entities.Employee
+﻿@model Employee_Management_System.Models.ViewModels.EmployeeViewModel
 
 @{
-    ViewData["Title"] = "Create Employee";
+    ViewData["Title"] = Model.Id == 0 ? "Create Employee" : "Edit Employee";
 }
 
-<h2>Create Employee</h2>
+<h2>@ViewData["Title"]</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" method="post">
+    <input type="hidden" asp-for="Id" />
     <div class="form-group">
         <label asp-for="FullName"></label>
         <input asp-for="FullName" class="form-control" />
@@ -19,7 +20,7 @@
     </div>
     <div class="form-group">
         <label asp-for="JoiningDate"></label>
-        <input asp-for="JoiningDate" class="form-control" />
+        <input type="date" asp-for="JoiningDate" class="form-control" />
         <span asp-validation-for="JoiningDate" class="text-danger"></span>
     </div>
     <div class="form-group">
@@ -32,12 +33,17 @@
         <input asp-for="PhoneNumber" class="form-control" />
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
-    <div class="Form-group">
+    <div class="form-group">
         <label asp-for="DepartmentId">Department</label>
-        <select asp-for="DepartmentId" class="form-control" asp-items="new SelectList(ViewBag.Departments)">
-            <option value=""> Select Department </option>
-        </select>
+        <select asp-for="DepartmentId" class="form-select" asp-items="Model.Departments"></select>
         <span asp-validation-for="DepartmentId" class="text-danger"></span>
     </div>
-     <button type="submit" class="btn btn-success">Save</button>   
+     <button type="submit" class="btn btn-success mt-1">Save</button>
+     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
