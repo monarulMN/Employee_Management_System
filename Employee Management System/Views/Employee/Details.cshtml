@@ -1,0 +1,16 @@
+﻿@model Employee_Management_System.Models.ViewModels.EmployeeViewModel
+
+
+<h2>Employee Details</h2>
+
+<div>
+    <strong>Name:</strong> @Model.FullName <br />
+    <strong>Designation:</strong> @Model.Designation <br />
+    <strong>Joining Date:</strong> @Model.JoiningDate <br />
+    <strong>Email:</strong> @Model.Email <br />
+    <strong>Phone Number:</strong> @Model.PhoneNumber <br />
+    <strong>Department:</strong> @Model.DepartmentName <br />
+</div>
+
+<a class="btn btn-primary" asp-action="Index">Back to List</a>
+

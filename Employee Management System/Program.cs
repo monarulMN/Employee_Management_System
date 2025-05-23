@@ -1,4 +1,6 @@
+using AutoMapper;
 using Employee_Management_System.Data;
+using Employee_Management_System.Mappings;
 using Employee_Management_System.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +13,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
-
-
-//builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-//{
-//    options.SignIn.RequireConfirmedAccount = true;
-//})
-// .AddEntityFrameworkStores<ApplicationDbContext>();
-
+//MappingProfile
+builder.Services.AddAutoMapper(typeof(Program));
 
 //Use Identity with Applicationuser and roles
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -78,6 +73,6 @@ app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Employee}/{action=Index}/{id?}");
 
 await app.RunAsync();

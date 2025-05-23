@@ -1,29 +1,45 @@
-﻿using Employee_Management_System.Data;
+﻿using AutoMapper;
+using Employee_Management_System.Data;
 using Employee_Management_System.Models.Entities;
 using Employee_Management_System.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace Employee_Management_System.Controllers
 {
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
         
-        public EmployeeController(ApplicationDbContext dbContext)
+        public EmployeeController(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString, int? page)
         {
-            var employees = await _dbContext.Employees.Include(e => e.Department).ToListAsync();
-            return View(employees);
+            var query = _dbContext.Employees.Include(e => e.Department).AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(e => e.FullName.Contains(searchString) || e.Email.Contains(searchString));
+            }
+            
+            var employees = await query.ToListAsync();
+            var employeeVMs = _mapper.Map<List<EmployeeViewModel>>(employees);
+
+            int pageSize = 5;
+            int pageNumber = page ?? 1;
+            
+            return View(employeeVMs.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]
         public IActionResult Create()
-        {
+        { 
             var model = new EmployeeViewModel
             {
                 Departments = _dbContext.Departments.Select(d => new SelectListItem
@@ -33,24 +49,16 @@ namespace Employee_Management_System.Controllers
                 }).ToList()
             };
 
-            //ViewBag.Departments = _dbContext.Departments.ToList();
+            
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(EmployeeViewModel model)
         {
-            if(ModelState.IsValid)
+            if(!ModelState.IsValid)
             {
-                var employee = new Employee
-                {
-                    FullName = model.FullName,
-                    Designation = model.Designation,
-                    JoiningDate = model.JoiningDate,
-                    PhoneNumber = model.PhoneNumber,
-                    Email = model.Email,
-                    DepartmentId = model.DepartmentId
-                };
+                var employee = _mapper.Map<Employee>(model);
 
                 _dbContext.Add(employee);
                 await _dbContext.SaveChangesAsync();
@@ -62,7 +70,7 @@ namespace Employee_Management_System.Controllers
                 Value = d.Id.ToString(),
                 Text = d.Name
             }).ToList();
-            //ViewBag.Departments = _dbContext.Departments.ToList();
+            
             return View(model);
         }
 
@@ -72,21 +80,14 @@ namespace Employee_Management_System.Controllers
             var employee = await _dbContext.Employees.FindAsync(id);
             if (employee == null) return NotFound();
 
-            var model = new EmployeeViewModel
+            var model = _mapper.Map<EmployeeViewModel>(employee);
+
+            model.Departments = _dbContext.Departments.Select(d => new SelectListItem
             {
-                Id = employee.Id,
-                FullName = employee.FullName,
-                Designation = employee.Designation,
-                JoiningDate = employee.JoiningDate,
-                PhoneNumber = employee.PhoneNumber,
-                Email = employee.Email,
-                DepartmentId = employee.DepartmentId,
-                Departments = _dbContext.Departments.Select(d => new SelectListItem
-                {
-                    Value = d.Id.ToString(),
-                    Text = d.Name
-                }).ToList()
-            };
+                Value = d.Id.ToString(),
+                Text = d.Name
+            }).ToList();
+
 
             return View(model);
         }
@@ -94,19 +95,13 @@ namespace Employee_Management_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EmployeeViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 var employee = await _dbContext.Employees.FindAsync(model.Id);
                 if (employee == null) return NotFound();
 
-                employee.FullName = model.FullName;
-                employee.Designation = model.Designation;
-                employee.JoiningDate = model.JoiningDate;
-                employee.PhoneNumber = model.PhoneNumber;
-                employee.Email = model.Email;
-                employee.DepartmentId = model.DepartmentId;
+                _mapper.Map(model, employee);
 
-                _dbContext.Employees.Update(employee);
                 await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -120,6 +115,7 @@ namespace Employee_Management_System.Controllers
             return View(model);
         }
 
+        
         public async Task<IActionResult> Delete(int id)
         {
             var employee = await _dbContext.Employees.FindAsync(id);
@@ -128,6 +124,17 @@ namespace Employee_Management_System.Controllers
             _dbContext.Employees.Remove(employee);
             await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var employee = await _dbContext.Employees.Include(e => e.Department)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee == null) return NotFound();
+
+            var employeeVM = _mapper.Map<EmployeeViewModel>(employee);
+            return View(employeeVM);
         }
     }
 }

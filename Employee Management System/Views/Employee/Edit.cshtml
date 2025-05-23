@@ -1,12 +1,12 @@
 ﻿@model Employee_Management_System.Models.ViewModels.EmployeeViewModel
 
 @{
-    ViewData["Title"] = Model.Id == 0 ? "Create Employee" : "Edit Employee";
+    ViewData["Title"] = Model.Id == 0 ? "Create" : "Edit";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" method="post">
+<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")"  method="post">
     <input type="hidden" asp-for="Id" />
     <div class="form-group">
         <label asp-for="FullName"></label>
@@ -38,8 +38,8 @@
         <select asp-for="DepartmentId" class="form-select" asp-items="Model.Departments"></select>
         <span asp-validation-for="DepartmentId" class="text-danger"></span>
     </div>
-     <button type="submit" class="btn btn-success mt-1">Save</button>
-     <a asp-action="Index" class="btn btn-secondary mt-1">Cancel</a>
+    <button type="submit" class="btn btn-success mt-1">Update</button>
+    <a asp-action="Index" class="btn btn-secondary mt-1">Cancel</a>
 </form>
 
 @section Scripts {

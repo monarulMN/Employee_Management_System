@@ -1,7 +1,16 @@
-﻿@model IEnumerable<Employee_Management_System.Models.Entities.Employee>
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Employee_Management_System.Models.ViewModels.EmployeeViewModel>
 
-<h1>Employees</h1>
-<a class="btn btn-primary mb-2" asp-action="Create">Add Employee</a>
+<h2>Employees</h2>
+
+<div class="d-flex justify-content-between flex-wrap mb-2">
+    <a class="btn btn-primary mb-2" asp-action="Create">Add Employee</a>
+    <form asp-action="Index" class ="d-flex " method="get">
+        <input type="text" name="searchString" class="form-control me-2 " placeholder="Search.." />
+        <button type="submit" class="btn btn-sm btn-primary ">Search</button>
+    </form>
+</div>
 
 <table class="table table-bordered">
     <thead>
@@ -23,13 +32,18 @@
                 <td>@employee.JoiningDate</td>
                 <td>@employee.Email</td>
                 <td>@employee.PhoneNumber</td>
-                <td>@employee.Department?.Name</td>
+                <td>@employee.DepartmentName</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-info btn-sm">Details</a>
                     <a asp-action="Delete" asp-route-id="@employee.Id" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
         }
+
+        <div>
+            @Html.PagedListPager(Model, page => Url.Action("Index", new {page}))
+        </div>
     </tbody>
 </table>
 

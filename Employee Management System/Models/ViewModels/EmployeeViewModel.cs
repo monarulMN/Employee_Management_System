@@ -46,6 +46,6 @@ namespace Employee_Management_System.Models.ViewModels
         //Navigation Property
         public List<SelectListItem> Departments { get; set; }
 
-        //public Department? Department { get; set; }
+        public string? DepartmentName { get; set; }
     }
 }

@@ -11,6 +11,8 @@ namespace Employee_Management_System.Data
         
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<TaskAssignment> TaskAssignments { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
