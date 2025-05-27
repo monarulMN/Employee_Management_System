@@ -130,7 +130,7 @@ namespace Employee_Management_System.Controllers
 
         public IActionResult ExportToExcel()
         {
-            using (var workbook = new XLWorkbook())
+            using (var workbook = new XLWorkbook ())
             {
                 var worksheet = workbook.Worksheets.Add("Tasks");
                 worksheet.Cell(1, 1).Value = "Title";
