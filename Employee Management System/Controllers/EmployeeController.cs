@@ -21,6 +21,10 @@ namespace Employee_Management_System.Controllers
         }
         public async Task<IActionResult> Index(string searchString, int? page)
         {
+            const int pageSize = 5;
+            int pageNumber = page ?? 1;
+
+
             var query = _dbContext.Employees.Include(e => e.Department).AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
@@ -31,8 +35,7 @@ namespace Employee_Management_System.Controllers
             var employees = await query.ToListAsync();
             var employeeVMs = _mapper.Map<List<EmployeeViewModel>>(employees);
 
-            int pageSize = 5;
-            int pageNumber = page ?? 1;
+            
             
             return View(employeeVMs.ToPagedList(pageNumber, pageSize));
         }

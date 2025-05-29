@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Employee_Management_System.Controllers
@@ -156,6 +154,37 @@ namespace Employee_Management_System.Controllers
                     return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Tasks.xlsx");
                 }
             }
+        }
+
+        public async Task<IActionResult> Report(string employeeId, string description, DateTime? from, DateTime? to)
+        {
+            var query = _dbContext.TaskAssignments.Include(t => t.Employee).AsQueryable();
+
+            if(!string.IsNullOrEmpty(employeeId))
+            {
+                query = query.Where(t => t.EmployeeId == employeeId);
+            }
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                query = query.Where(t => t.Description == description);
+            }
+
+            if (from.HasValue)
+            {
+                query= query.Where(t => t.DueDate >= from.Value);
+            }
+
+            if (to.HasValue)
+            {
+                query = query.Where(t => t.DueDate <= to.Value);
+            }
+
+            var tasks = await query.ToListAsync();
+            var taskVMs = _mapper.Map<List<TaskAssignmentViewModel>>(tasks);
+
+            ViewBag.Employees = new SelectList(await _dbContext.Users.ToListAsync(), "Id", "UserName");
+            return View(taskVMs);
         }
 
     }

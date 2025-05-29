@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1>Admin Dashboard</h1>
+
+
+<div class="row ">
+    <div class="col-md-3">
+        <div class="card p-3 bg-info text-white">Total Employees: @ViewBag.TotalEmployees</div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 bg-success text-white">Total Tasks: @ViewBag.TotalTasks</div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 bg-warning text-dark">Completed Tasks: @ViewBag.CompletedTasks</div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 bg-primary text-white">Departments: @ViewBag.TotalDepartments</div>
+    </div>
+</div>
+
+<canvas id="taskChart" height="100"></canvas>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('taskChart');
+        const chartData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ChartData));
+
+        const labels = chartData.map(c => c.Description);
+        const counts = chartData.map(c => c.count);
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Task Description',
+                    data: counts,
+                    backgroundColor: ['green', 'orange', 'red', 'blue']
+                }]
+            }
+        });
+    </script>
+}
