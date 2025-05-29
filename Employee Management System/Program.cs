@@ -2,6 +2,8 @@ using AutoMapper;
 using Employee_Management_System.Data;
 using Employee_Management_System.Mappings;
 using Employee_Management_System.Models.Entities;
+using Employee_Management_System.Services.Implementations;
+using Employee_Management_System.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +23,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
+
+builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSetting"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 //Configure Identity Options (Optional)

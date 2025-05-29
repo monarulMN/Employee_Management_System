@@ -3,6 +3,7 @@ using ClosedXML.Excel;
 using Employee_Management_System.Data;
 using Employee_Management_System.Models.Entities;
 using Employee_Management_System.Models.ViewModels;
+using Employee_Management_System.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,12 +17,17 @@ namespace Employee_Management_System.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
-        public TaskAssignmentController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IMapper mapper)
+        public TaskAssignmentController(ApplicationDbContext dbContext, 
+            UserManager<ApplicationUser> userManager, 
+            IMapper mapper,
+            IEmailService emailService)
         {
             _dbContext = dbContext;
             _userManager = userManager;
             _mapper = mapper;
+            _emailService = emailService;
         }
         public async Task<IActionResult> Index(string searchTerm, int page = 1)
         {
@@ -154,6 +160,35 @@ namespace Employee_Management_System.Controllers
                     return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Tasks.xlsx");
                 }
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Assign(TaskAssignmentViewModel model)
+        {
+            var task = new TaskAssignment
+            {
+                TaskName = model.TaskName,
+                Description = model.Description,
+                EmployeeId = model.EmployeeId,
+                AssignedDate = DateTime.Now
+            };
+
+            _dbContext.TaskAssignments.Add(task);
+            await _dbContext.SaveChangesAsync();
+
+            var employee = await _dbContext.Users.FindAsync(model.EmployeeId);
+            if(employee != null)
+            {
+                await _emailService.SenderEmailAsync(
+                    employee.Email,
+                    "New Task Assigned",
+                    $"Dear {employee.FullName}, <br/><br/> You have been assigned a new task: " +
+                        "<strong>{task.TaskName}</strong>.<br/>Please check your dashboard.<br/>" +
+                        "<br/>Best regards,<br/>EMS System "
+                );
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }
