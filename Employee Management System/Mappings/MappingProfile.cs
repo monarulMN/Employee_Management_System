@@ -14,7 +14,10 @@ namespace Employee_Management_System.Mappings
             CreateMap<EmployeeViewModel, Employee>().ReverseMap();
 
             CreateMap<TaskAssignment, TaskAssignmentViewModel>()
-                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.UserName));
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.UserName))
+                .ForMember(dest => dest.AssignedTo, opt => opt.MapFrom(src => src.Employee.FullName))
+                .ForMember(dest => dest.Designation, opt => opt.MapFrom(src => src.Employee.Designation))
+                .ForMember(dest => dest.IsCompleted, opt => opt.MapFrom(src => src.Description == "Completed"));
 
             CreateMap<TaskAssignmentViewModel, TaskAssignment>();   
         }

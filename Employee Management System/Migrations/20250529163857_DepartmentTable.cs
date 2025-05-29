@@ -5,7 +5,7 @@
 namespace Employee_Management_System.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTaskAssignmentsTable : Migration
+    public partial class DepartmentTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

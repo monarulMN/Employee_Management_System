@@ -11,10 +11,13 @@ namespace Employee_Management_System.Models.Entities
         [StringLength(100)]
         public string Title { get; set; }
 
+        public string TaskName { get; set; }
         public string Description { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime DueDate { get; set; }
+
+        public DateTime AssignedDate { get; set; }
 
         [Required]
         public string EmployeeId { get; set; }

@@ -1,6 +1,7 @@
-﻿
+﻿@using System.Text.Json
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Dashboard"; 
+   
 }
 
 <h1>Admin Dashboard</h1>
@@ -26,23 +27,32 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        const ctx = document.getElementById('taskChart');
-        const chartData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ChartData));
 
-        const labels = chartData.map(c => c.Description);
-        const counts = chartData.map(c => c.count);
+        const chartData = @Html.Raw(JsonSerializer.Serialize(ViewBag.ChartData ?? new List<object>()));
 
-        new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Task Description',
-                    data: counts,
-                    backgroundColor: ['green', 'orange', 'red', 'blue']
-                }]
-            }
-        });
+        if(chartData && chartData.length)
+        {
+            const labels = chartData.map(c => c.Description);
+            const counts = chartData.map(c => c.count);
+
+            const ctx = document.getElementById('taskChart');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Task Description',
+                        data: counts,
+                        backgroundColor: ['green', 'orange', 'red', 'blue']
+                    }]
+                }
+            });
+        }
+        else{
+            console.warn("Chart data is empty or null");
+        }
+        
     </script>
 }

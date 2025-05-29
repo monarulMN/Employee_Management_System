@@ -155,37 +155,5 @@ namespace Employee_Management_System.Controllers
                 }
             }
         }
-
-        public async Task<IActionResult> Report(string employeeId, string description, DateTime? from, DateTime? to)
-        {
-            var query = _dbContext.TaskAssignments.Include(t => t.Employee).AsQueryable();
-
-            if(!string.IsNullOrEmpty(employeeId))
-            {
-                query = query.Where(t => t.EmployeeId == employeeId);
-            }
-
-            if (!string.IsNullOrEmpty(description))
-            {
-                query = query.Where(t => t.Description == description);
-            }
-
-            if (from.HasValue)
-            {
-                query= query.Where(t => t.DueDate >= from.Value);
-            }
-
-            if (to.HasValue)
-            {
-                query = query.Where(t => t.DueDate <= to.Value);
-            }
-
-            var tasks = await query.ToListAsync();
-            var taskVMs = _mapper.Map<List<TaskAssignmentViewModel>>(tasks);
-
-            ViewBag.Employees = new SelectList(await _dbContext.Users.ToListAsync(), "Id", "UserName");
-            return View(taskVMs);
-        }
-
     }
 }

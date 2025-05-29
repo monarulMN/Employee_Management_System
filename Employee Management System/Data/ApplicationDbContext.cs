@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace Employee_Management_System.Data
 {
@@ -12,6 +13,7 @@ namespace Employee_Management_System.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<TaskAssignment> TaskAssignments { get; set; }
+        public DbSet<ApplicationUser> Users { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -23,6 +25,11 @@ namespace Employee_Management_System.Data
                 .WithOne(e => e.Department)
                 .HasForeignKey(e => e.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<TaskAssignment>()
+                .HasOne(t => t.Employee)
+                .WithMany()
+                .HasForeignKey(t => t.EmployeeId);
         }
 
         

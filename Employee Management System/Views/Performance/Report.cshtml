@@ -1,0 +1,57 @@
+﻿@model Employee_Management_System.Models.ViewModels.PerformanceReportViewModel
+
+@{
+    ViewData["Title"] = "Performance Report";
+}
+
+<h2>Performance Report</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label>Employee</label>
+        @Html.DropDownListFor(m => m.EmployeeId, Model.Employees, "Select Employee", new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label>Designation</label>
+        <input asp-for="Designation" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>From Date</label>
+        <input asp-for="FromDate" type="date" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>To Date</label>
+        <input asp-for="ToDate" type="date" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Generate Report</button>
+</form>
+
+@if (Model.FilteredTasks != null && Model.FilteredTasks.Any())
+{
+    <h3 class="mt-4">Filtered Tasks</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Description</th>
+                <th>Assigned To</th>
+                <th>Designation</th>
+                <th>Assigned Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model.FilteredTasks)
+            {
+                <tr>
+                    <td>@task.TaskName</td>
+                    <td>@task.Description</td>
+                    <td>@task.AssignedTo</td>
+                    <td>@task.Designation</td>
+                    <td>@task.AssignedDate.ToShortDateString()</td>
+                    <td>@(task.IsCompleted ? "Completed" : "Pending")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,6 +1,8 @@
 ﻿using Employee_Management_System.Data;
+using Employee_Management_System.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Employee_Management_System.Controllers
 {
@@ -19,15 +21,17 @@ namespace Employee_Management_System.Controllers
             var completedTasks = await _dbContext.TaskAssignments.CountAsync(t => t.Description == "Completed");
             var totalDepartments = await _dbContext.Departments.CountAsync();
 
-            var charData = await _dbContext.TaskAssignments
+            var chartData = await _dbContext.TaskAssignments
                 .GroupBy(t => t.Description)
-                .Select(g => new { Description = g.Key, Count = g.Count() })
+                .Select(g => new TaskChartData { Description = g.Key, Count = g.Count() })
                 .ToListAsync();
 
             ViewBag.TotalEmployees = totalEmployees;
             ViewBag.TotalTasks = totalTasks;
             ViewBag.CompletedTasks = completedTasks;
-            ViewBag.Departments = charData;
+            ViewBag.TotalDepartments = totalDepartments;
+
+            ViewBag.ChartData = chartData;
 
             return View();
         }
