@@ -49,10 +49,11 @@ builder.Services.AddRazorPages();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    //app.UseExceptionHandler("/Home/Error");
+    //app.UseHsts();
+    app.UseDeveloperExceptionPage();
 }
 
 // Seed Data and Roles 
@@ -60,10 +61,10 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
-    SeedData.Initialize(dbContext);
-
-    await SeedRoles.InitializeAsync(services);
+    SeedData.Initialize(dbContext); // Optional data seed
+    await SeedRoles.InitializeAsync(services); // <== Correct!
 }
+
 
 
 app.UseHttpsRedirection();

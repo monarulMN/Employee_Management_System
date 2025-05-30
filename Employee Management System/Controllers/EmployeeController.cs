@@ -2,6 +2,7 @@
 using Employee_Management_System.Data;
 using Employee_Management_System.Models.Entities;
 using Employee_Management_System.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using X.PagedList;
 
 namespace Employee_Management_System.Controllers
 {
+    
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
